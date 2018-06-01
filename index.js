@@ -42,9 +42,20 @@ function generateShoppingItemsString(shoppingList) {
 
 
 function renderShoppingList() {
+  // Make a copy of STORE.items to manipulate for displaying
+  let filteredItems = [ ...STORE.items ];
+
+  // Check STORE.sortBy to determine how to order filteredItems
+  if (STORE.sortBy === 'alpha') {
+    filteredItems.sort((a, b) => a.name > b.name);
+  } else if (STORE.sortBy === 'time') {
+    filteredItems.sort((a, b) => a.createdAt < b.createdAt);
+  }
+
   // render the shopping list in the DOM
   console.log('`renderShoppingList` ran');
-  const shoppingListItemsString = generateShoppingItemsString(STORE.items);
+  // We're now generating HTML from the filteredItems and not the persistent STORE.items
+  const shoppingListItemsString = generateShoppingItemsString(filteredItems);
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
