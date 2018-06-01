@@ -1,12 +1,12 @@
-/* global strftime */
+/* global strftime, cuid */
 'use strict';
 
 const STORE = {
   items: [
-    {name: "apples", checked: false, createdAt: Date.now() - 100000000},
-    {name: "oranges", checked: false, createdAt: Date.now() - 4000000},
-    {name: "milk", checked: true, createdAt: Date.now() - 820000000},
-    {name: "bread", checked: false, createdAt: Date.now() - 6000000}
+    {id: cuid(), name: "apples", checked: false, createdAt: Date.now() - 100000000},
+    {id: cuid(), name: "oranges", checked: false, createdAt: Date.now() - 4000000},
+    {id: cuid(), name: "milk", checked: true, createdAt: Date.now() - 820000000},
+    {id: cuid(), name: "bread", checked: false, createdAt: Date.now() - 6000000}
   ],
 };
 
@@ -14,9 +14,9 @@ function displayTimeCreated(createdAt) {
   return strftime('%h-%d %H:%M', new Date(createdAt));
 }
 
-function generateItemElement(item, itemIndex, template) {
+function generateItemElement(item) {
   return `
-    <li class="js-item-index-element" data-item-index="${itemIndex}">
+    <li class="js-item-index-element" data-item-id="${item.id}">
       <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
       <span class="shopping-item-timestamp">${displayTimeCreated(item.createdAt)}</span>
       <div class="shopping-item-controls">
@@ -34,7 +34,7 @@ function generateItemElement(item, itemIndex, template) {
 function generateShoppingItemsString(shoppingList) {
   console.log("Generating shopping list element");
 
-  const items = shoppingList.map((item, index) => generateItemElement(item, index));
+  const items = shoppingList.map((item) => generateItemElement(item));
   
   return items.join("");
 }
@@ -52,7 +52,7 @@ function renderShoppingList() {
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.items.push({name: itemName, checked: false, createdAt: Date.now()});
+  STORE.items.push({id: cuid(), name: itemName, checked: false, createdAt: Date.now()});
 }
 
 function handleNewItemSubmit() {
@@ -66,39 +66,33 @@ function handleNewItemSubmit() {
   });
 }
 
-function toggleCheckedForListItem(itemIndex) {
-  console.log("Toggling checked property for item at index " + itemIndex);
-  STORE.items[itemIndex].checked = !STORE.items[itemIndex].checked;
+function getItemIdFromElement(item) {
+  return $(item)
+    .closest('.js-item-index-element')
+    .data('item-id');
 }
 
+function findItemById(id) {
+  return STORE.items.find(i => i.id === id);
+}
 
-function getItemIndexFromElement(item) {
-  const itemIndexString = $(item)
-    .closest('.js-item-index-element')
-    .attr('data-item-index');
-  return parseInt(itemIndexString, 10);
+function toggleCheckedForListItem(itemId) {
+  const item = findItemById(itemId);
+  item.checked = !item.checked;
 }
 
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', `.js-item-toggle`, event => {
     console.log('`handleItemCheckClicked` ran');
-    const itemIndex = getItemIndexFromElement(event.currentTarget);
-    toggleCheckedForListItem(itemIndex);
+    const itemId = getItemIdFromElement(event.currentTarget);
+    toggleCheckedForListItem(itemId);
     renderShoppingList();
   });
 }
 
 // name says it all. responsible for deleting a list item.
-function deleteListItem(itemIndex) {
-  console.log(`Deleting item at index  ${itemIndex} from shopping list`)
-
-  // as with `addItemToShoppingLIst`, this function also has the side effect of
-  // mutating the global STORE value.
-  //
-  // we call `.splice` at the index of the list item we want to remove, with a length
-  // of 1. this has the effect of removing the desired item, and shifting all of the
-  // elements to the right of `itemIndex` (if any) over one place to the left, so we
-  // don't have an empty space in our list.
+function deleteListItem(itemId) {
+  const itemIndex = STORE.items.findIndex(i => i.id === itemId);
   STORE.items.splice(itemIndex, 1);
 }
 
@@ -106,10 +100,9 @@ function deleteListItem(itemIndex) {
 function handleDeleteItemClicked() {
   // like in `handleItemCheckClicked`, we use event delegation
   $('.js-shopping-list').on('click', '.js-item-delete', event => {
-    // get the index of the item in STORE
-    const itemIndex = getItemIndexFromElement(event.currentTarget);
+    const itemId = getItemIdFromElement(event.currentTarget);
     // delete the item
-    deleteListItem(itemIndex);
+    deleteListItem(itemId);
     // render the updated shopping list
     renderShoppingList();
   });
