@@ -3,17 +3,22 @@
 
 const STORE = {
   items: [
-    {name: "apples", checked: false},
-    {name: "oranges", checked: false},
-    {name: "milk", checked: true},
-    {name: "bread", checked: false}
+    {name: "apples", checked: false, createdAt: Date.now() - 100000000},
+    {name: "oranges", checked: false, createdAt: Date.now() - 4000000},
+    {name: "milk", checked: true, createdAt: Date.now() - 820000000},
+    {name: "bread", checked: false, createdAt: Date.now() - 6000000}
   ],
 };
+
+function displayTimeCreated(createdAt) {
+  return strftime('%h-%d %H:%M', new Date(createdAt));
+}
 
 function generateItemElement(item, itemIndex, template) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
+      <span class="shopping-item-timestamp">${displayTimeCreated(item.createdAt)}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -47,7 +52,7 @@ function renderShoppingList() {
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.items.push({name: itemName, checked: false});
+  STORE.items.push({name: itemName, checked: false, createdAt: Date.now()});
 }
 
 function handleNewItemSubmit() {

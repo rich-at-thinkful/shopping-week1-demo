@@ -43,6 +43,12 @@
     color: grey;
     font-style: italic;
     font-size: 20px;
+  }
+
+  .shopping-item-timestamp {
+    display: block;
+    font-size: 14px;
+    color: darkgray;
     margin-bottom: 15px;
   }
   
