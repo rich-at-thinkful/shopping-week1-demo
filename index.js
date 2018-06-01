@@ -113,6 +113,14 @@ function changeSortBy(sortBy) {
   STORE.sortBy = sortBy;
 }
 
+function handleChangeSortBy() {
+  $('#js-shopping-list-sortby').change(e => {
+    const sortBy = e.target.value;
+    changeSortBy(sortBy);
+    renderShoppingList();
+  });
+}
+
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -122,6 +130,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleChangeSortBy();
 }
 
 // when the page loads, call `handleShoppingList`
