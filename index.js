@@ -8,6 +8,7 @@ const STORE = {
     {id: cuid(), name: "milk", checked: true, createdAt: Date.now() - 820000000},
     {id: cuid(), name: "bread", checked: false, createdAt: Date.now() - 6000000}
   ],
+  sortBy: 'alpha',
 };
 
 function displayTimeCreated(createdAt) {
