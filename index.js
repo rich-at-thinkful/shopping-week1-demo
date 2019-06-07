@@ -47,9 +47,9 @@ function renderShoppingList() {
 
   // Check STORE.sortBy to determine how to order filteredItems
   if (STORE.sortBy === 'alpha') {
-    filteredItems.sort((a, b) => a.name > b.name);
+    filteredItems.sort((a, b) => a.name > b.name ? 1 : -1);
   } else if (STORE.sortBy === 'time') {
-    filteredItems.sort((a, b) => a.createdAt < b.createdAt);
+    filteredItems.sort((a, b) => a.createdAt < b.createdAt ? 1 : -1);
   }
 
   // render the shopping list in the DOM
